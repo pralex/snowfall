@@ -9,9 +9,6 @@ MAX_Y = 768
 
 SNOW_SIZE = 64
 
-MAX_SNOW = 20
-MAX_SHOTS = 25
-
 counter = 0
 shots = 0
 
@@ -28,10 +25,10 @@ autoshot_event = pygame.USEREVENT + 2
 timeout_event = pygame.USEREVENT + 3
 
 trigger = False
-
 stop_time = None
 
-class Snow():
+
+class Snow:
 
     def __init__(self, x, y):
         global counter
@@ -70,7 +67,7 @@ class Snow():
         return (x in range(self.x, self.x + self.size)) and (y in range(self.y, self.y + self.size))
 
 
-def initialize(level):
+def initialize():
     global shots, snowfall, stop_time
 
     shots = levels[current_level].get('shots')
@@ -82,19 +79,18 @@ def initialize(level):
 
 
 def check_for_exit():
-    global snowfall, shots, trigger
-    first_shot = False
+    global snowfall, shots, trigger, shot_sound
 
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            pygame.event.post(pygame.event.Event(shot_event))
+            pygame.event.post(pygame.event.Event(shot_event, {}))
         elif event.type == shot_event:
             if pygame.mouse.get_pressed()[0]:
                 if shots > 0:
                     shots -= 1
-                    pygame.mixer.music.play(1)
+                    shot_sound.play()
                     x, y = pygame.mouse.get_pos()
                     shooten = []
                     for key in snowfall.keys():
@@ -103,8 +99,7 @@ def check_for_exit():
                     for snow_id in shooten:
                         snowfall.pop(snow_id)
 
-                pygame.time.set_timer(shot_event, 200)
-
+                pygame.time.set_timer(shot_event, 300)
 
 
 def draw_scope():
@@ -113,6 +108,7 @@ def draw_scope():
 
 
 if __name__ == '__main__':
+
     pygame.init()
     screen = pygame.display.set_mode((MAX_X, MAX_Y), pygame.FULLSCREEN)
     font1 = pygame.font.SysFont("Arial", 36)
@@ -124,8 +120,10 @@ if __name__ == '__main__':
     bg_color = (0, 0, 20)
     snowfall = {}
     current_level = 0
-    initialize(current_level)
-    pygame.mixer.music.load('shotgun.ogg')
+    initialize()
+    # pygame.mixer.music.load('snowfall.mp3')
+    # pygame.mixer.music.play()
+    shot_sound = pygame.mixer.Sound("shotgun.ogg")
     pygame.mouse.set_visible(False)
 
     while True:
@@ -137,12 +135,12 @@ if __name__ == '__main__':
                 result = font3.render("YOU WIN", True, (0, 128, 0))
                 break
             else:
-                initialize(current_level)
+                initialize()
         else:
             if shots > 0:
-                for key in snowfall.keys():
-                    snowfall[key].move_snow()
-                    snowfall[key].draw_snow()
+                for snow in snowfall.keys():
+                    snowfall[snow].move_snow()
+                    snowfall[snow].draw_snow()
                 draw_scope()
                 screen.blit(font1.render("SNOW: " + str(len(snowfall)), True, (0, 128, 0)), (0, 0))
                 screen.blit(font1.render("SHOTS: " + str(shots), True, (0, 128, 0)), (0, 50))
@@ -150,7 +148,7 @@ if __name__ == '__main__':
                 if curr_time <= 0:
                     result = font3.render("GAME OVER", True, (128, 0, 0))
                     break
-                screen.blit(font2.render("TIME: %02d:%02d" % (curr_time//60, curr_time%60),
+                screen.blit(font2.render("TIME: %02d:%02d" % (curr_time//60, curr_time % 60),
                                          True, (255, 255, 0)), (1030, 0))
                 lvl = font2.render("LEVEL " + str(current_level+1), True, (0, 128, 0))
                 screen.blit(lvl, ((MAX_X - lvl.get_height()) // 2, 0))
