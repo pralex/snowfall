@@ -23,6 +23,7 @@ levels = [
 shot_event = pygame.USEREVENT + 1
 autoshot_event = pygame.USEREVENT + 2
 timeout_event = pygame.USEREVENT + 3
+music_play = pygame.USEREVENT + 4
 
 trigger = False
 stop_time = None
@@ -39,8 +40,7 @@ class Snow:
         self.y = y
         self.speed = random.randint(1, 3)
         self.img_num = random.randint(1, 5)
-        self.image_filename = "image%s.png" % str(self.img_num)
-        self.image = pygame.image.load(self.image_filename).convert_alpha()
+        self.image = pygame.image.load("image%s.png" % str(self.img_num)).convert_alpha()
         self.size = random.randint(levels[current_level].get('min_size'), levels[current_level].get('max_size'))
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         if self.img_num == 5 and random.randint(0, 1):
@@ -99,7 +99,10 @@ def check_for_exit():
                     for snow_id in shooten:
                         snowfall.pop(snow_id)
 
-                pygame.time.set_timer(shot_event, 300)
+                pygame.time.set_timer(shot_event, 400)
+        elif event.type == music_play:
+            pygame.mixer.music.play()
+            pygame.mixer.music.set_endevent(music_play)
 
 
 def draw_scope():
@@ -121,8 +124,9 @@ if __name__ == '__main__':
     snowfall = {}
     current_level = 0
     initialize()
-    # pygame.mixer.music.load('snowfall.mp3')
-    # pygame.mixer.music.play()
+    pygame.mixer.music.load('snowfall.mp3')
+    pygame.mixer.music.play()
+    pygame.mixer.music.set_endevent(music_play)
     shot_sound = pygame.mixer.Sound("shotgun.ogg")
     pygame.mouse.set_visible(False)
 
