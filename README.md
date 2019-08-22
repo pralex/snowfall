@@ -1,5 +1,6 @@
 # snowfall
-Snowfall Game
-=============
 
-It is just a simple shooter game. Nothing special.
+Snowfall Game
+-------------
+
+This is just a simple shooter game. Nothing serious.
