@@ -2,4 +2,4 @@
 Snowfall Game
 =============
 
-It is just a simple shooter game. Nothing special.
+This is just a simple shooter game. Nothing serious.
